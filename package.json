@@ -1,0 +1,32 @@
+{
+  "name": "@caraer/cms-tokens",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Caraer CMS v2 design tokens: the contract between company branding and module styling.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Caraer-HQ/caraer-cms-tokens.git"
+  },
+  "homepage": "https://github.com/Caraer-HQ/caraer-cms-tokens",
+  "bugs": {
+    "url": "https://github.com/Caraer-HQ/caraer-cms-tokens/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "generate": "node scripts/generate-css.mjs"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "caraer",
+    "caraer-cms-module"
+  ]
+}
