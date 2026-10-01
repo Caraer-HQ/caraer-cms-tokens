@@ -129,6 +129,15 @@ export interface CaraerTokenSet {
   layout: Record<LayoutToken, string>;
   breakpoint: Record<BreakpointToken, string>;
   shadow: Record<ShadowToken, string>;
+  /**
+   * Font sizes that replace the inline (mobile) sizes once the viewport
+   * crosses the typography breakpoints. Empty when the company has not set
+   * a different size for that device.
+   */
+  responsiveType?: {
+    tablet: Partial<Record<TypeRole, string>>;
+    desktop: Partial<Record<TypeRole, string>>;
+  };
 }
 
 /** Flattens a structured token set into the `--caraer-*` custom properties. */
@@ -155,4 +164,34 @@ export function toStyleAttribute(tokens: CaraerTokens): string {
     .filter(([, value]) => value !== undefined && value !== null && value !== '')
     .map(([name, value]) => `${name}:${value}`)
     .join(';');
+}
+
+const SAFE_CSS_LENGTH = /^-?\d*\.?\d+(px|rem|em|%|vw|vh)$/;
+
+/**
+ * Tablet and desktop font-size overrides.
+ *
+ * The inline style on `<html>` is the mobile size, and an inline custom
+ * property beats a stylesheet rule, so these declarations are `!important`.
+ * Breakpoints match the published typography stylesheet: tablet from 768px,
+ * desktop from 1024px.
+ */
+export function toResponsiveTypeCss(set: CaraerTokenSet): string {
+  const blocks: Array<[string, Partial<Record<TypeRole, string>> | undefined]> = [
+    ['768px', set.responsiveType?.tablet],
+    ['1024px', set.responsiveType?.desktop],
+  ];
+  return blocks
+    .map(([minWidth, sizes]) => {
+      if (!sizes) return '';
+      const lines = TYPE_ROLES.flatMap((role) => {
+        const size = sizes[role];
+        if (!size || !SAFE_CSS_LENGTH.test(size)) return [];
+        return [`    --caraer-size-${role}: ${size} !important;`];
+      });
+      if (lines.length === 0) return '';
+      return `@media (min-width: ${minWidth}) {\n  :root {\n${lines.join('\n')}\n  }\n}`;
+    })
+    .filter(Boolean)
+    .join('\n');
 }

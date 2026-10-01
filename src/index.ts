@@ -7,6 +7,7 @@ export {
   SPACE_TOKENS,
   TYPE_ROLES,
   toCustomProperties,
+  toResponsiveTypeCss,
   toStyleAttribute,
 } from './schema.ts';
 
